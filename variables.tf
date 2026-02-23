@@ -201,3 +201,19 @@ variable "ai_search_service_id" {
   type        = string
   default     = ""
 }
+
+variable "ai_search_backup_storage_account_id" {
+  description = "Storage account ID for AI Search snapshot/backup operations"
+  type        = string
+  default     = ""
+}
+
+################################################################################
+# PostgreSQL Server (for Reader role on server metadata)
+################################################################################
+
+variable "postgres_server_id" {
+  description = "Azure Database for PostgreSQL server resource ID (for Reader role)"
+  type        = string
+  default     = ""
+}

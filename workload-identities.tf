@@ -80,6 +80,14 @@ resource "azurerm_role_assignment" "postgres_storage" {
   principal_id         = azurerm_user_assigned_identity.postgres_backup[0].principal_id
 }
 
+# Reader on PostgreSQL server - access server metadata (connection info, config)
+resource "azurerm_role_assignment" "postgres_server_reader" {
+  count                = var.create && var.enable_postgres && var.postgres_server_id != "" ? 1 : 0
+  scope                = var.postgres_server_id
+  role_definition_name = "Reader"
+  principal_id         = azurerm_user_assigned_identity.postgres_backup[0].principal_id
+}
+
 resource "azurerm_federated_identity_credential" "postgres_backup" {
   count               = var.create && var.enable_postgres && local.create_federated_credentials ? 1 : 0
   name                = "postgres-${var.postgres_backup_namespace}-${var.postgres_backup_service_account}"
@@ -183,5 +191,13 @@ resource "azurerm_role_assignment" "ai_search_service" {
   count                = var.create && var.enable_ai_search && var.ai_search_service_id != "" ? 1 : 0
   scope                = var.ai_search_service_id
   role_definition_name = "Search Service Contributor"
+  principal_id         = azurerm_user_assigned_identity.ai_search[0].principal_id
+}
+
+# Storage Blob Data Contributor - snapshot/backup to storage account
+resource "azurerm_role_assignment" "ai_search_storage" {
+  count                = var.create && var.enable_ai_search && var.ai_search_backup_storage_account_id != "" ? 1 : 0
+  scope                = var.ai_search_backup_storage_account_id
+  role_definition_name = "Storage Blob Data Contributor"
   principal_id         = azurerm_user_assigned_identity.ai_search[0].principal_id
 }
