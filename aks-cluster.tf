@@ -29,7 +29,7 @@ resource "azurerm_user_assigned_identity" "cluster" {
 
 # Network Contributor on subnets - required for AKS pod networking
 resource "azurerm_role_assignment" "cluster_network" {
-  for_each             = local.create_cluster_identity ? toset(var.subnet_ids) : toset([])
+  for_each             = local.create_cluster_identity ? { for idx, id in var.subnet_ids : "subnet-${idx}" => id } : {}
   scope                = each.value
   role_definition_name = "Network Contributor"
   principal_id         = azurerm_user_assigned_identity.cluster[0].principal_id
